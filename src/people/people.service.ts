@@ -90,7 +90,6 @@ export class PeopleService {
           .map(async (filmId) => {
             try {
               const filmResponse = await this.filmsService.findOne(filmId);
-              console.log(filmResponse);
               return filmResponse;
             } catch (error) {
               return null;
