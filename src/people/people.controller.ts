@@ -14,4 +14,9 @@ export class PeopleController {
   async findOne(@Param('id') id: string) {
     return await this.peopleService.findOne(id);
   }
+
+  @Get(':id/detail')
+  async findFullDetailOfOne(@Param('id') id: string) {
+    return await this.peopleService.findFullDetailOfOne(id);
+  }
 }

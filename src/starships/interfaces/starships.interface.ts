@@ -1,3 +1,6 @@
+import { Film } from 'src/films/interfaces/films.interface';
+import { People } from 'src/people/interfaces/people.interface';
+
 export interface Starship {
   id: string;
   name: string;
@@ -13,8 +16,8 @@ export interface Starship {
   hyperdrive_rating: string;
   MGLT: string;
   starship_class: string;
-  pilots: any[];
-  films: string[];
+  pilots: string[] | People[];
+  films: string[] | Film[];
   created: string;
   edited: string;
   url: string;

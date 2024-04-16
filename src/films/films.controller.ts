@@ -14,4 +14,9 @@ export class FilmsController {
   async findOne(@Param('id') id: string) {
     return await this.filmsService.findOne(id);
   }
+
+  @Get(':id/detail')
+  async findFullDetailOfOne(@Param('id') id: string) {
+    return await this.filmsService.findFullDetailOfOne(id);
+  }
 }

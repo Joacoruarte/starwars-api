@@ -9,7 +9,9 @@ import { StarshipsService } from 'src/starships/starships.service';
 @Injectable()
 export class PeopleService {
   constructor(
+    @Inject(forwardRef(() => StarshipsService))
     private readonly starshipsService: StarshipsService,
+    @Inject(forwardRef(() => FilmsService))
     private readonly filmsService: FilmsService,
     private readonly planetsService: PlanetsService,
     @Inject(forwardRef(() => SpeciesService))
@@ -55,6 +57,19 @@ export class PeopleService {
   }
 
   async findOne(id: string) {
+    let peopleResponse: People;
+    try {
+      peopleResponse = await this.httpAxiosService.get<People>(`people/${id}`);
+      peopleResponse = { id, ...peopleResponse };
+    } catch (error) {
+      console.log('Error in PeopleService.findOne');
+      throw new NotFoundException(`Person with id ${id} not found`);
+    }
+
+    return peopleResponse;
+  }
+
+  async findFullDetailOfOne(id: string) {
     const regex = /(\d+)/;
     let peopleResponse: People;
     let species = ['Human'];

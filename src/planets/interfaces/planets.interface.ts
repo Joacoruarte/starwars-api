@@ -1,3 +1,6 @@
+import { Film } from 'src/films/interfaces/films.interface';
+import { People } from 'src/people/interfaces/people.interface';
+
 export interface Planet {
   id: string;
   name: string;
@@ -9,8 +12,8 @@ export interface Planet {
   terrain: string;
   surface_water: string;
   population: string;
-  residents: string[];
-  films: string[];
+  residents: string[] | People[];
+  films: string[] | Film[];
   created: string;
   edited: string;
   url: string;
