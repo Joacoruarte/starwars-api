@@ -75,8 +75,6 @@ export class FilmsService {
       console.log('Error in FilmsService.findOne');
     }
 
-    console.log(characters);
-
     return {
       ...filmResponse,
       characters,
