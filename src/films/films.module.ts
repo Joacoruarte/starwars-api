@@ -1,15 +1,13 @@
-import { Module } from '@nestjs/common';
-import { FilmsService } from './films.service';
-import { FilmsController } from './films.controller';
+import { Module, forwardRef } from '@nestjs/common';
 import { CommonModule } from 'src/common/common.module';
-import { PeopleService } from 'src/people/people.service';
-import { SpeciesService } from 'src/species/species.service';
-import { PlanetsService } from 'src/planets/planets.service';
-import { StarshipsService } from 'src/starships/starships.service';
+import { FilmsController } from './films.controller';
+import { FilmsService } from './films.service';
+import { PeopleModule } from 'src/people/people.module';
 
 @Module({
-  imports: [CommonModule],
+  imports: [CommonModule, forwardRef(() => PeopleModule)],
   controllers: [FilmsController],
-  providers: [FilmsService, PeopleService, SpeciesService, PlanetsService, StarshipsService],
+  providers: [FilmsService],
+  exports: [FilmsService],
 })
 export class FilmsModule {}

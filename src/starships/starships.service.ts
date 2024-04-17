@@ -1,15 +1,14 @@
 import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
-import { GetStarshipsResponse, Starship } from './interfaces/starships.interface';
-import { PeopleService } from 'src/people/people.service';
 import { FilmsService } from 'src/films/films.service';
+import { PeopleService } from 'src/people/people.service';
+import { GetStarshipsResponse, Starship } from './interfaces/starships.interface';
 
 @Injectable()
 export class StarshipsService {
   constructor(
     @Inject(forwardRef(() => PeopleService))
     private readonly peopleService: PeopleService,
-    @Inject(forwardRef(() => FilmsService))
     private readonly filmsService: FilmsService,
     private readonly httpAxiosService: AxiosAdapter,
   ) {}
@@ -21,7 +20,7 @@ export class StarshipsService {
       const url = `starships?page=${page || 1}${search ? `&search=${search}` : ''}`;
       starshipsResponse = await this.httpAxiosService.get<GetStarshipsResponse>(url);
       starshipsResponse.results = starshipsResponse.results.map((starship) => ({
-        id: starship.url.match(/(\d+)/)[1],
+        id: this.extractIdFromUrl(starship.url),
         ...starship,
       }));
     } catch (error) {
@@ -46,57 +45,28 @@ export class StarshipsService {
   }
 
   async findFullDetailOfOne(id: string) {
-    let starshipResponse: Starship;
-    let pilots = [];
-    let films = [];
-    const regex = /(\d+)/;
-
-    // Get the starship
-    try {
-      starshipResponse = await this.findOne(id);
-      starshipResponse = { id, ...starshipResponse };
-    } catch (error) {
-      console.log('Error in StarshipsService.findOne');
-      throw new NotFoundException(`Starship with id ${id} not found`);
-    }
-
-    // Get the pilots
-    try {
-      const pilotIds = (starshipResponse.pilots as string[]).map((pilot) => pilot.match(regex)?.[1]).filter(Boolean);
-      pilots = await Promise.all(
-        pilotIds.map(async (id) => {
-          try {
-            return await this.peopleService.findOne(id);
-          } catch (error) {
-            console.log(error);
-            return { error: 'Something went wrong' };
-          }
-        }),
-      );
-    } catch (error) {
-      console.log('Error in StarshipsService.findFullDetailOfOne');
-      pilots = [];
-    }
-
-    // Get films data
-    try {
-      const filmsIds = (starshipResponse.films as string[]).map((film) => film.match(regex)?.[1]).filter(Boolean);
-      films = await Promise.all(
-        filmsIds
-          .map(async (filmId) => {
-            try {
-              const filmResponse = await this.filmsService.findOne(filmId);
-              return filmResponse;
-            } catch (error) {
-              return null;
-            }
-          })
-          .filter(Boolean),
-      );
-    } catch (error) {
-      films = [];
-    }
-
+    const starshipResponse = await this.findOne(id);
+    const pilots = await this.getCharacters(starshipResponse.pilots as string[]);
+    const films = await this.getFilms(starshipResponse.films as string[]);
     return { ...starshipResponse, pilots, films };
+  }
+
+  private async getCharacters(characters: string[]) {
+    const characterIds = characters.map((character) => this.extractIdFromUrl(character)).filter(Boolean);
+    const characterPromises = characterIds.map((characterId) => this.peopleService.findOne(characterId));
+    const characterResults = await Promise.all(characterPromises);
+    return !!characterResults.length ? characterResults : ['Unknown'];
+  }
+
+  private async getFilms(films: string[]) {
+    const filmsIds = films.map((film) => this.extractIdFromUrl(film)).filter(Boolean);
+    const filmsPromises = filmsIds.map((filmId) => this.filmsService.findOne(filmId));
+    const filmsResults = await Promise.all(filmsPromises);
+    return filmsResults;
+  }
+
+  private extractIdFromUrl(url: string): string {
+    const matches = url.match(/(\d+)/);
+    return matches ? matches[1] : '';
   }
 }

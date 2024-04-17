@@ -1,6 +1,5 @@
 import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
-import { GetPeopleResponse, People } from 'src/people/interfaces/people.interface';
 import { GetSpeciesResponse, Specie } from './interfaces/species.interface';
 import { PeopleService } from 'src/people/people.service';
 
@@ -39,7 +38,10 @@ export class SpeciesService {
   }
 
   async findOne(id: string) {
+    if (!id) throw new NotFoundException('specie id is required');
+
     let specieResponse: Specie;
+
     try {
       specieResponse = await this.httpAxiosService.get<Specie>(`species/${id}`);
       specieResponse = { id, ...specieResponse };
@@ -52,43 +54,20 @@ export class SpeciesService {
   }
 
   async findPeople(id: string) {
-    let specieResponse: Specie;
-    let peopleResponse: Pick<GetPeopleResponse, 'count' | 'results'> | { error: string };
+    const specieResponse = await this.findOne(id);
+    const characters = await this.getCharacters(specieResponse.people as string[]);
+    return { ...specieResponse, people: characters };
+  }
 
-    try {
-      specieResponse = await this.findOne(id);
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+  private async getCharacters(characters: string[]) {
+    const characterIds = characters.map((character) => this.extractIdFromUrl(character)).filter(Boolean);
+    const characterPromises = characterIds.map((characterId) => this.peopleService.findOne(characterId));
+    const characterResults = await Promise.all(characterPromises);
+    return !!characterResults.length ? characterResults : ['Unknown'];
+  }
 
-    try {
-      const responses = await Promise.all(
-        specieResponse.people?.map(async (specie) => {
-          const id = specie.match(/(\d+)/)[1];
-          try {
-            const response = await this.peopleService.findOne(id);
-            return {
-              ...response,
-              species: [specieResponse.name],
-            };
-          } catch (error) {
-            return null;
-          }
-        }),
-      );
-
-      const validResponses = responses.filter(Boolean);
-
-      peopleResponse = {
-        count: validResponses.length,
-        results: validResponses as People[],
-      };
-    } catch (error) {
-      console.log('Error in SpeciesService.findPeople');
-      peopleResponse = { error: 'Something went wrong' };
-    }
-
-    return peopleResponse;
+  private extractIdFromUrl(url: string): string {
+    const matches = url.match(/(\d+)/);
+    return matches ? matches[1] : '';
   }
 }

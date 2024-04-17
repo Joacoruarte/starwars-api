@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
 import { GetPlanetsResponse, Planet } from './interfaces/planets.interface';
-import { FilmsService } from 'src/films/films.service';
 import { PeopleService } from 'src/people/people.service';
+import { FilmsService } from 'src/films/films.service';
 
 @Injectable()
 export class PlanetsService {
@@ -21,7 +21,7 @@ export class PlanetsService {
       const url = `planets?page=${page || 1}${search ? `&search=${search}` : ''}`;
       planetsResponse = await this.httpAxiosService.get<GetPlanetsResponse>(url);
       planetsResponse.results = planetsResponse.results.map((planet) => ({
-        id: planet.url.match(/(\d+)/)[1],
+        id: this.extractIdFromUrl(planet.url),
         ...planet,
       }));
     } catch (error) {
@@ -47,58 +47,29 @@ export class PlanetsService {
   }
 
   async findFullDetailOfOne(id: string) {
-    let planetResponse: Planet;
-    let residents = [];
-    let films = [];
-    const regex = /(\d+)/;
-
-    // Get the planet
-    try {
-      planetResponse = await this.findOne(id);
-      planetResponse = { id, ...planetResponse };
-    } catch (error) {
-      console.log('Error in PlanetsService.findOne');
-      throw new NotFoundException(`Planet with id ${id} not found`);
-    }
-
-    // Get the residents
-    try {
-      const residentIds = (planetResponse.residents as string[])
-        .map((resident) => resident.match(regex)?.[1])
-        .filter(Boolean);
-      residents = await Promise.all(
-        residentIds.map(async (id) => {
-          try {
-            return await this.peopleService.findOne(id);
-          } catch (error) {
-            console.log(error);
-            return { error: 'Something went wrong' };
-          }
-        }),
-      );
-    } catch (error) {
-      console.log('Error in PlanetsService.findFullDetailOfOne');
-      residents = [{ error: 'Something went wrong' }];
-    }
-
-    // Get the films
-    try {
-      const filmIds = (planetResponse.films as string[]).map((film) => film.match(regex)?.[1]).filter(Boolean);
-      films = await Promise.all(
-        filmIds.map(async (id) => {
-          try {
-            return await this.filmsService.findOne(id);
-          } catch (error) {
-            console.log(error);
-            return { error: 'Something went wrong' };
-          }
-        }),
-      );
-    } catch (error) {
-      console.log('Error in PlanetsService.findFullDetailOfOne');
-      films = [{ error: 'Something went wrong' }];
-    }
+    const planetResponse = await this.findOne(id);
+    const residents = await this.getCharacters(planetResponse.residents as string[]);
+    const films = await this.getFilms(planetResponse.films as string[]);
 
     return { ...planetResponse, residents, films };
+  }
+
+  private async getCharacters(characters: string[]) {
+    const characterIds = characters.map((character) => this.extractIdFromUrl(character)).filter(Boolean);
+    const characterPromises = characterIds.map((characterId) => this.peopleService.findOne(characterId));
+    const characterResults = await Promise.all(characterPromises);
+    return !!characterResults.length ? characterResults : ['Unknown'];
+  }
+
+  private async getFilms(films: string[]) {
+    const filmsIds = films.map((film) => this.extractIdFromUrl(film)).filter(Boolean);
+    const filmsPromises = filmsIds.map((filmId) => this.filmsService.findOne(filmId));
+    const filmsResults = await Promise.all(filmsPromises);
+    return filmsResults;
+  }
+
+  private extractIdFromUrl(url: string): string {
+    const matches = url.match(/(\d+)/);
+    return matches ? matches[1] : '';
   }
 }

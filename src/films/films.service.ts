@@ -17,7 +17,7 @@ export class FilmsService {
     try {
       filmsResponse = await this.httpAxiosService.get<GetFilmsResponse>('films');
       filmsResponse.results = filmsResponse.results.map((film) => ({
-        id: film.url.match(/(\d+)/)[1],
+        id: this.extractIdFromUrl(film.url),
         ...film,
       }));
     } catch (error) {
@@ -42,42 +42,24 @@ export class FilmsService {
   }
 
   async findFullDetailOfOne(id: string) {
-    let filmResponse: Film;
-    let characters = [];
-    const regex = /(\d+)/;
-
-    // Get the film
-    try {
-      filmResponse = await this.findOne(id);
-      filmResponse = { id, ...filmResponse };
-    } catch (error) {
-      console.log('Error in FilmsService.findOne');
-      throw new NotFoundException(`Film with id ${id} not found`);
-    }
-
-    // Get the characters
-    try {
-      const characterIds = (filmResponse.characters as string[]).map((film) => film.match(regex)?.[1]).filter(Boolean);
-      const characterPromises = characterIds.map(async (characterId) => {
-        try {
-          const characterResponse = await this.peopleService.findOne(characterId);
-          return { id: characterId, ...characterResponse };
-        } catch (_) {
-          return null;
-        }
-      });
-
-      const characterResults = await Promise.all(characterPromises);
-
-      // Filter out null characters
-      characters = characterResults.filter((character) => character !== null);
-    } catch (error) {
-      console.log('Error in FilmsService.findOne');
-    }
+    const filmResponse = await this.findOne(id);
+    const characters = await this.getCharacters(filmResponse.characters as string[]);
 
     return {
       ...filmResponse,
       characters,
     };
+  }
+
+  private async getCharacters(characters: string[]) {
+    const characterIds = characters.map((character) => this.extractIdFromUrl(character)).filter(Boolean);
+    const characterPromises = characterIds.map((characterId) => this.peopleService.findOne(characterId));
+    const characterResults = await Promise.all(characterPromises);
+    return !!characterResults.length ? characterResults : ['Unknown'];
+  }
+
+  private extractIdFromUrl(url: string): string {
+    const matches = url.match(/(\d+)/);
+    return matches ? matches[1] : '';
   }
 }

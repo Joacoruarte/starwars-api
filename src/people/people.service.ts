@@ -13,6 +13,7 @@ export class PeopleService {
     private readonly starshipsService: StarshipsService,
     @Inject(forwardRef(() => FilmsService))
     private readonly filmsService: FilmsService,
+    @Inject(forwardRef(() => PlanetsService))
     private readonly planetsService: PlanetsService,
     @Inject(forwardRef(() => SpeciesService))
     private readonly speciesService: SpeciesService,
@@ -25,29 +26,13 @@ export class PeopleService {
     try {
       const url = `people?page=${page || 1}${search ? `&search=${search}` : ''}`;
       peopleResponse = await this.httpAxiosService.get<GetPeopleResponse>(url);
-      peopleResponse.results = await Promise.all(
-        peopleResponse.results.map(async (person) => {
-          const id = person.url?.match(regex)[1] || null;
-          const specieId = person.species?.[0]?.match(regex)[1] || null;
-          let species = ['Human'];
-
-          if (specieId) {
-            try {
-              const specieResponse = await this.speciesService.findOne(specieId);
-              species = [specieResponse.name];
-            } catch (error) {
-              console.log(error);
-              species = ['Unknown'];
-            }
-          }
-
-          return {
-            id,
-            ...person,
-            species,
-          };
-        }),
-      );
+      const promises = peopleResponse.results.map(async (person) => {
+        const id = person.url?.match(regex)[1] || null;
+        const specieId = person.species?.[0]?.match(regex)[1] || null;
+        const specie = await this.getSpecie(specieId);
+        return { ...person, id, species: specie };
+      });
+      peopleResponse.results = await Promise.all(promises);
     } catch (error) {
       console.log('Error in PeopleService.findAll');
       peopleResponse = { error: 'Something went wrong' };
@@ -70,91 +55,60 @@ export class PeopleService {
   }
 
   async findFullDetailOfOne(id: string) {
-    const regex = /(\d+)/;
-    let peopleResponse: People;
-    let species = ['Human'];
-    let planet = 'Unknown';
-    let films = [];
-    let starships = [];
-
-    // Get person data
-    try {
-      peopleResponse = await this.httpAxiosService.get<People>(`people/${id}`);
-      peopleResponse = { id, ...peopleResponse };
-    } catch (error) {
-      console.log('Error in PeopleService.findOne');
-      throw new NotFoundException(`Person with id ${id} not found`);
-    }
-
-    // Get planet data
-    try {
-      const planetId = peopleResponse.homeworld.match(regex)[1];
-      if (planetId) {
-        const planetResponse = await this.planetsService.findOne(planetId);
-        planet = planetResponse.name;
-      }
-    } catch (_) {
-      planet = 'Unknown';
-    }
-
-    // Get films data
-    try {
-      const filmsIds = (peopleResponse.films as string[]).map((film) => film.match(regex)?.[1]).filter(Boolean);
-      films = await Promise.all(
-        filmsIds
-          .map(async (filmId) => {
-            try {
-              const filmResponse = await this.filmsService.findOne(filmId);
-              return filmResponse;
-            } catch (error) {
-              return null;
-            }
-          })
-          .filter(Boolean),
-      );
-    } catch (error) {
-      films = [];
-    }
-
-    // Get species data
-    try {
-      const specieId = peopleResponse.species?.[0]?.match(regex)[1] || null;
-      if (specieId) {
-        const specieResponse = await this.speciesService.findOne(specieId);
-        species = [specieResponse.name];
-      }
-    } catch (_) {
-      species = ['Unknown'];
-    }
-
-    // Get starships data
-    try {
-      const starshipsIds = (peopleResponse.starships as string[])
-        .map((starship) => starship.match(regex)?.[1])
-        .filter(Boolean);
-
-      starships = await Promise.all(
-        starshipsIds
-          .map(async (starshipId) => {
-            try {
-              const starshipResponse = await this.starshipsService.findOne(starshipId);
-              return starshipResponse;
-            } catch (error) {
-              return null;
-            }
-          })
-          .filter(Boolean),
-      );
-    } catch (error) {
-      starships = [];
-    }
+    const peopleResponse = await this.findOne(id);
+    const planet = await this.getPlanet(peopleResponse.homeworld);
+    const films = await this.getFilms(peopleResponse.films as string[]);
+    const species = await this.getSpecies(peopleResponse.species);
+    const starships = await this.getStarships(peopleResponse.starships as string[]);
 
     return {
       ...peopleResponse,
+      species,
       homeworld: planet,
       films,
-      species,
       starships,
     };
+  }
+
+  private async getSpecies(species: string[]) {
+    const regex = /(\d+)/;
+    const speciesIds = species.map((specie) => specie.match(regex)?.[1]).filter(Boolean);
+    const speciesPromises = speciesIds.map((specieId) => this.speciesService.findOne(specieId));
+    const speciesResults = await Promise.all(speciesPromises);
+    return !!speciesResults.length ? [speciesResults?.[0].name] : ['Unknown'];
+  }
+
+  private async getSpecie(specieId: string) {
+    try {
+      const response = await this.speciesService.findOne(specieId);
+      return [response.name];
+    } catch (error) {
+      return error.response.statusCode === 404 && ['Unknown'];
+    }
+  }
+
+  private async getFilms(films: string[]) {
+    const filmsIds = films.map((film) => this.extractIdFromUrl(film)).filter(Boolean);
+    const filmsPromises = filmsIds.map((filmId) => this.filmsService.findOne(filmId));
+    const filmsResults = await Promise.all(filmsPromises);
+    return filmsResults;
+  }
+
+  private async getPlanet(planetUrl: string) {
+    const planetId = this.extractIdFromUrl(planetUrl);
+    const planetResponse = await this.planetsService.findOne(planetId);
+    return planetResponse.name;
+  }
+
+  private async getStarships(starships: string[]) {
+    const starshipsIds = starships.map((starship) => this.extractIdFromUrl(starship)).filter(Boolean);
+    const starshipsPromises = starshipsIds.map((starshipId) => this.starshipsService.findOne(starshipId));
+    const starshipsResults = await Promise.all(starshipsPromises);
+    return starshipsResults;
+  }
+
+  private extractIdFromUrl(url: string): string {
+    const matches = url.match(/(\d+)/);
+    return matches ? matches[1] : '';
   }
 }
