@@ -52,14 +52,11 @@ $ cp .env.example .env
 ## Correr la app
 
 ```bash
-# development
+# Entorno de desarrollo
 $ npm run start
 
-# watch mode
+# Entorno de desarrollo en modo watch
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
 ## Test
