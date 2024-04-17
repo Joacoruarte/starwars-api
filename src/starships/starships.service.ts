@@ -25,6 +25,9 @@ export class StarshipsService {
       }));
     } catch (error) {
       console.log('Error in StarshipsService.findAll');
+      if ((page || search) && error.detail === 'Not found') {
+        return { count: 0, next: null, previous: null, results: [] };
+      }
       starshipsResponse = { error: 'Something went wrong' };
     }
 

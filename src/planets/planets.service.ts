@@ -26,6 +26,9 @@ export class PlanetsService {
       }));
     } catch (error) {
       console.log('Error in PlanetsService.findAll');
+      if ((page || search) && error.detail === 'Not found') {
+        return { count: 0, next: null, previous: null, results: [] };
+      }
       planetsResponse = { error: 'Something went wrong' };
     }
 

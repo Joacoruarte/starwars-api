@@ -5,34 +5,51 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Descripcion
 
-## Description
+API desarrolada con el framework de [Nest](https://nestjs.com/) con [TypeScript](https://www.typescriptlang.org/).<br/>
+Esta se encarga de obtener los datos de la api publica de Star Wars [SWAPI](https://swapi.dev/). La API cuenta con endpoints para recuperar la informacion de:
+- **Personajes 👨‍👩‍👧‍👧**
+- **Peliculas 📹**
+- **Naves 🚀**
+- **Planetas 🪐.**
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Installation
+Deployada en [Railway](https://railway.app/) y se puede acceder a ella en el siguiente [link](https://conexa-api-production.up.railway.app/api/v1) de ser necesario. Luego del proceso de instalacion se recomienda probar la API con la siguiente coleccion de postman: <br/><br/> 
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://god.gw.postman.com/run-collection/19593363-69dfb404-9c47-41bc-9017-2d5fcb2df620?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D19593363-69dfb404-9c47-41bc-9017-2d5fcb2df620%26entityType%3Dcollection%26workspaceId%3Dcc9a4f89-fca5-4ed5-b51d-44581036ffc6)
+
+
+## Pre-requisitos
+
+
+#### Verificar version de Node.js instalada (>= 16)
+
+
+```bash
+$ node -v 
+```
+
+#### Tener Nest CLI instalado
+
+```bash
+$ npm i -g @nestjs/cli
+```
+
+
+## Instalacion
 
 ```bash
 $ npm install
 ```
 
-## Running the app
+## Variables de entorno
+Clonar el archivo ```.env.example``` y renombrarlo a ```.env```
+
+```bash
+$ cp .env.example .env
+```
+
+## Correr la app
 
 ```bash
 # development
@@ -50,24 +67,5 @@ $ npm run start:prod
 ```bash
 # unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
