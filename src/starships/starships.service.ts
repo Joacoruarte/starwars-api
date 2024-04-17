@@ -35,7 +35,10 @@ export class StarshipsService {
   }
 
   async findOne(id: string) {
+    if (!id) throw new NotFoundException('Starship id is required');
+
     let starshipResponse: Starship;
+
     try {
       starshipResponse = await this.httpAxiosService.get<Starship>(`/starships/${id}`);
       starshipResponse = { id, ...starshipResponse };
@@ -68,6 +71,7 @@ export class StarshipsService {
   }
 
   private extractIdFromUrl(url: string): string {
+    if (!url) return '';
     const matches = url.match(/(\d+)/);
     return matches ? matches[1] : '';
   }

@@ -64,6 +64,7 @@ export class SpeciesService {
   }
 
   private extractIdFromUrl(url: string): string {
+    if (!url) return '';
     const matches = url.match(/(\d+)/);
     return matches ? matches[1] : '';
   }

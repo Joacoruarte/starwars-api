@@ -45,6 +45,8 @@ export class PeopleService {
   }
 
   async findOne(id: string) {
+    if (!id) throw new NotFoundException('Person id is required');
+
     let peopleResponse: People;
     try {
       peopleResponse = await this.httpAxiosService.get<People>(`/people/${id}`);
@@ -53,7 +55,9 @@ export class PeopleService {
       throw new NotFoundException(`Person with id ${id} not found`);
     }
 
-    return peopleResponse;
+    const specieId = this.extractIdFromUrl(peopleResponse.species?.[0]);
+    const specie = await this.getSpecie(specieId);
+    return { ...peopleResponse, species: specie };
   }
 
   async findFullDetailOfOne(id: string) {
@@ -110,6 +114,7 @@ export class PeopleService {
   }
 
   private extractIdFromUrl(url: string): string {
+    if (!url) return '';
     const matches = url.match(/(\d+)/);
     return matches ? matches[1] : '';
   }

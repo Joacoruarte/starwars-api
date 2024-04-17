@@ -35,6 +35,8 @@ export class PlanetsService {
   }
 
   async findOne(id: string) {
+    if (!id) throw new NotFoundException('Planet id is required');
+
     let planetResponse: Planet;
 
     try {
@@ -70,6 +72,7 @@ export class PlanetsService {
   }
 
   private extractIdFromUrl(url: string): string {
+    if (!url) return '';
     const matches = url.match(/(\d+)/);
     return matches ? matches[1] : '';
   }

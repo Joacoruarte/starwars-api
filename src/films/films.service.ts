@@ -27,6 +27,7 @@ export class FilmsService {
     return filmsResponse;
   }
   async findOne(id: string) {
+    if (!id) throw new NotFoundException('Film id is required');
     let filmResponse: Film;
 
     try {
@@ -57,6 +58,7 @@ export class FilmsService {
   }
 
   private extractIdFromUrl(url: string): string {
+    if (!url) return '';
     const matches = url.match(/(\d+)/);
     return matches ? matches[1] : '';
   }
