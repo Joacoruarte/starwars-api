@@ -47,17 +47,15 @@ describe('SpeciesService', () => {
 
   it('should return an object with the specie information and an array of characters when given a valid specie id', async () => {
     const id = '1';
-    const result = await service.findPeople(id);
+    const response = await service.findPeople(id);
 
-    expect(result.id).toEqual(id);
-    expect(result).toHaveProperty('people');
-
-    if (Array.isArray(result.people)) {
-      if (result.people.length > 0) {
-        expect(result.people[0]).toHaveProperty('id');
+    expect(response).toHaveProperty('results');
+    if (Array.isArray(response.results)) {
+      if (response.results.length > 0) {
+        expect(response.results[0]).toHaveProperty('id');
       }
     } else {
-      expect(result.people).toHaveProperty('error');
+      expect(response.results).toEqual({ count: 0, results: [] });
     }
   });
 

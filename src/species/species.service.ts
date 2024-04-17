@@ -53,7 +53,7 @@ export class SpeciesService {
   async findPeople(id: string) {
     const specieResponse = await this.findOne(id);
     const characters = await this.getCharacters(specieResponse.people as string[]);
-    return { ...specieResponse, people: characters };
+    return { count: characters.length, results: characters };
   }
 
   private async getCharacters(characters: string[]) {
