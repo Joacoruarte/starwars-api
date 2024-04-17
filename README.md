@@ -19,7 +19,7 @@ Esta se encarga de obtener los datos de la API publica de Star Wars [SWAPI](http
 
 
 Deployada en [Railway](https://railway.app/) y se puede acceder a ella en el siguiente [link](https://conexa-api-production.up.railway.app/api/v1) de ser necesario. Luego del proceso de instalacion se recomienda probar la API con la siguiente coleccion de postman: <br/><br/> 
-[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://god.gw.postman.com/run-collection/19593363-69dfb404-9c47-41bc-9017-2d5fcb2df620?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D19593363-69dfb404-9c47-41bc-9017-2d5fcb2df620%26entityType%3Dcollection%26workspaceId%3Dcc9a4f89-fca5-4ed5-b51d-44581036ffc6)
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://www.postman.com/universal-rocket-821238/workspace/public-apis-joaquin-ruarte/request/19593363-130a3b94-c0f7-4f16-aec4-1f3a5b233cca)
 
 
 ## Pre-requisitos
