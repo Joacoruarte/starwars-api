@@ -12,7 +12,7 @@ export class SpeciesService {
   ) {}
 
   async findAll() {
-    let speciesResponse: Specie[] | { error: string };
+    let speciesResponse: Specie[];
 
     try {
       const speciesResponses = await Promise.all([
@@ -29,11 +29,9 @@ export class SpeciesService {
           const id = response.url.match(/(\d+)/)[1];
           return { id, ...response };
         });
-    } catch (error) {
-      console.log('Error in SpeciesService.findAll');
-      speciesResponse = { error: 'Something went wrong' };
+    } catch (_) {
+      return { error: 'Something went wrong' };
     }
-
     return speciesResponse;
   }
 
@@ -46,7 +44,6 @@ export class SpeciesService {
       specieResponse = await this.httpAxiosService.get<Specie>(`/species/${id}`);
       specieResponse = { id, ...specieResponse };
     } catch (error) {
-      console.log('Error in SpeciesService.findOne');
       throw new NotFoundException(`specie with id ${id} not found`);
     }
 

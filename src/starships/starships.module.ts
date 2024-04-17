@@ -6,7 +6,7 @@ import { PeopleModule } from 'src/people/people.module';
 import { FilmsModule } from 'src/films/films.module';
 
 @Module({
-  imports: [CommonModule, FilmsModule, forwardRef(() => PeopleModule)],
+  imports: [CommonModule, forwardRef(() => FilmsModule), forwardRef(() => PeopleModule)],
   controllers: [StarshipsController],
   providers: [StarshipsService],
   exports: [StarshipsService],

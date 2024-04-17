@@ -34,9 +34,6 @@ export class PeopleService {
       });
       peopleResponse.results = await Promise.all(promises);
     } catch (error) {
-      console.log(error);
-
-      console.log('Error in PeopleService.findAll');
       if ((page || search) && error.detail === 'Not found') {
         return { count: 0, next: null, previous: null, results: [] };
       }
@@ -53,7 +50,6 @@ export class PeopleService {
       peopleResponse = await this.httpAxiosService.get<People>(`/people/${id}`);
       peopleResponse = { id, ...peopleResponse };
     } catch (error) {
-      console.log('Error in PeopleService.findOne');
       throw new NotFoundException(`Person with id ${id} not found`);
     }
 

@@ -21,7 +21,6 @@ export class FilmsService {
         ...film,
       }));
     } catch (error) {
-      console.log('Error in FilmsService.findAll');
       filmsResponse = { error: 'Something went wrong' };
     }
 
@@ -34,7 +33,6 @@ export class FilmsService {
       filmResponse = await this.httpAxiosService.get<Film>(`/films/${id}`);
       filmResponse = { id, ...filmResponse };
     } catch (error) {
-      console.log('Error in FilmsService.findOne');
       throw new NotFoundException(`Film with id ${id} not found`);
     }
 

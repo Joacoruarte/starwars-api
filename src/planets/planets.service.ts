@@ -25,11 +25,10 @@ export class PlanetsService {
         ...planet,
       }));
     } catch (error) {
-      console.log('Error in PlanetsService.findAll');
       if ((page || search) && error.detail === 'Not found') {
         return { count: 0, next: null, previous: null, results: [] };
       }
-      planetsResponse = { error: 'Something went wrong' };
+      return { error: 'Something went wrong' };
     }
 
     return planetsResponse;
@@ -42,7 +41,6 @@ export class PlanetsService {
       planetResponse = await this.httpAxiosService.get<Planet>(`/planets/${id}`);
       planetResponse = { id, ...planetResponse };
     } catch (error) {
-      console.log('Error in PlanetsService.findOne');
       throw new NotFoundException(`Planet with id ${id} not found`);
     }
 

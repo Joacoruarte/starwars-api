@@ -9,6 +9,7 @@ export class StarshipsService {
   constructor(
     @Inject(forwardRef(() => PeopleService))
     private readonly peopleService: PeopleService,
+    @Inject(forwardRef(() => FilmsService))
     private readonly filmsService: FilmsService,
     private readonly httpAxiosService: AxiosAdapter,
   ) {}
@@ -24,7 +25,6 @@ export class StarshipsService {
         ...starship,
       }));
     } catch (error) {
-      console.log('Error in StarshipsService.findAll');
       if ((page || search) && error.detail === 'Not found') {
         return { count: 0, next: null, previous: null, results: [] };
       }
@@ -40,7 +40,6 @@ export class StarshipsService {
       starshipResponse = await this.httpAxiosService.get<Starship>(`/starships/${id}`);
       starshipResponse = { id, ...starshipResponse };
     } catch (error) {
-      console.log('Error in StarshipsService.findOne');
       throw new NotFoundException(`Starship with id ${id} not found`);
     }
 
