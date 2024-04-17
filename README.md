@@ -8,7 +8,7 @@
 ## Descripcion del projecto
 
 API desarrolada con el framework de [Nest](https://nestjs.com/) con [TypeScript](https://www.typescriptlang.org/).<br/>
-Esta se encarga de obtener los datos de la api publica de Star Wars [SWAPI](https://swapi.dev/). La API cuenta con endpoints para recuperar la informacion de:
+Esta se encarga de obtener los datos de la API publica de Star Wars [SWAPI](https://swapi.dev/). La API cuenta con endpoints para recuperar la informacion de:
 - **Personajes 👨‍👩‍👧‍👧**
 - **Peliculas 📹**
 - **Naves 🚀**
