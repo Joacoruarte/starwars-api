@@ -5,10 +5,10 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-## Descripcion
+## Descripcion del projecto
 
 API desarrolada con el framework de [Nest](https://nestjs.com/) con [TypeScript](https://www.typescriptlang.org/).<br/>
-Esta se encarga de obtener los datos de la api publica de Star Wars [SWAPI](https://swapi.dev/). La API cuenta con endpoints para recuperar la informacion de:
+Esta se encarga de obtener los datos de la API publica de Star Wars [SWAPI](https://swapi.dev/). La API cuenta con endpoints para recuperar la informacion de:
 - **Personajes 👨‍👩‍👧‍👧**
 - **Peliculas 📹**
 - **Naves 🚀**
@@ -52,14 +52,11 @@ $ cp .env.example .env
 ## Correr la app
 
 ```bash
-# development
+# Entorno de desarrollo
 $ npm run start
 
-# watch mode
+# Entorno de desarrollo en modo watch
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
 ## Test
