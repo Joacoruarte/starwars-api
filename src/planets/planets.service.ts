@@ -18,7 +18,7 @@ export class PlanetsService {
     let planetsResponse: GetPlanetsResponse | { error: string };
 
     try {
-      const url = `planets?page=${page || 1}${search ? `&search=${search}` : ''}`;
+      const url = `/planets?page=${page || 1}${search ? `&search=${search}` : ''}`;
       planetsResponse = await this.httpAxiosService.get<GetPlanetsResponse>(url);
       planetsResponse.results = planetsResponse.results.map((planet) => ({
         id: this.extractIdFromUrl(planet.url),
@@ -39,7 +39,7 @@ export class PlanetsService {
     let planetResponse: Planet;
 
     try {
-      planetResponse = await this.httpAxiosService.get<Planet>(`planets/${id}`);
+      planetResponse = await this.httpAxiosService.get<Planet>(`/planets/${id}`);
       planetResponse = { id, ...planetResponse };
     } catch (error) {
       console.log('Error in PlanetsService.findOne');

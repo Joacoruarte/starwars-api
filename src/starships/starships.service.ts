@@ -17,7 +17,7 @@ export class StarshipsService {
     let starshipsResponse: GetStarshipsResponse | { error: string };
 
     try {
-      const url = `starships?page=${page || 1}${search ? `&search=${search}` : ''}`;
+      const url = `/starships?page=${page || 1}${search ? `&search=${search}` : ''}`;
       starshipsResponse = await this.httpAxiosService.get<GetStarshipsResponse>(url);
       starshipsResponse.results = starshipsResponse.results.map((starship) => ({
         id: this.extractIdFromUrl(starship.url),
@@ -37,7 +37,7 @@ export class StarshipsService {
   async findOne(id: string) {
     let starshipResponse: Starship;
     try {
-      starshipResponse = await this.httpAxiosService.get<Starship>(`starships/${id}`);
+      starshipResponse = await this.httpAxiosService.get<Starship>(`/starships/${id}`);
       starshipResponse = { id, ...starshipResponse };
     } catch (error) {
       console.log('Error in StarshipsService.findOne');

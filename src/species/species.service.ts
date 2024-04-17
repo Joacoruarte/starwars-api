@@ -16,10 +16,10 @@ export class SpeciesService {
 
     try {
       const speciesResponses = await Promise.all([
-        this.httpAxiosService.get<GetSpeciesResponse>('species?page=1'),
-        this.httpAxiosService.get<GetSpeciesResponse>('species?page=2'),
-        this.httpAxiosService.get<GetSpeciesResponse>('species?page=3'),
-        this.httpAxiosService.get<GetSpeciesResponse>('species?page=4'),
+        this.httpAxiosService.get<GetSpeciesResponse>('/species?page=1'),
+        this.httpAxiosService.get<GetSpeciesResponse>('/species?page=2'),
+        this.httpAxiosService.get<GetSpeciesResponse>('/species?page=3'),
+        this.httpAxiosService.get<GetSpeciesResponse>('/species?page=4'),
       ]);
 
       speciesResponse = speciesResponses
@@ -43,7 +43,7 @@ export class SpeciesService {
     let specieResponse: Specie;
 
     try {
-      specieResponse = await this.httpAxiosService.get<Specie>(`species/${id}`);
+      specieResponse = await this.httpAxiosService.get<Specie>(`/species/${id}`);
       specieResponse = { id, ...specieResponse };
     } catch (error) {
       console.log('Error in SpeciesService.findOne');

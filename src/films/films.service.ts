@@ -15,7 +15,7 @@ export class FilmsService {
     let filmsResponse: GetFilmsResponse | { error: string };
 
     try {
-      filmsResponse = await this.httpAxiosService.get<GetFilmsResponse>('films');
+      filmsResponse = await this.httpAxiosService.get<GetFilmsResponse>('/films');
       filmsResponse.results = filmsResponse.results.map((film) => ({
         id: this.extractIdFromUrl(film.url),
         ...film,
@@ -31,7 +31,7 @@ export class FilmsService {
     let filmResponse: Film;
 
     try {
-      filmResponse = await this.httpAxiosService.get<Film>(`films/${id}`);
+      filmResponse = await this.httpAxiosService.get<Film>(`/films/${id}`);
       filmResponse = { id, ...filmResponse };
     } catch (error) {
       console.log('Error in FilmsService.findOne');
